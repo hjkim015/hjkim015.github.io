@@ -15,18 +15,19 @@ Single static page. No build step, no dependencies.
 ## Adding projects
 
 Open `index.html` and edit the `PROJECTS` object near the bottom — it's the only
-thing you need to touch. Three keys: `inventing`, `surfacing`, `steering`, each a
-flat array.
+thing you need to touch. Three keys, in the same order as the bio sentence:
+`steering`, `inventing`, `surfacing`. Each is a flat array.
 
 ```js
 const PROJECTS = {
   inventing: [
     { title: 'Questable',
       date:  '2022',                       // "2025 —" marks something ongoing
-      tag:   'software',                   // or an array: ['founding','0–1']
+      tag:   'software',                   // or an array: ['research','interpretability']
       role:  'Co-Founder & Advisor',       // optional, italic line under the title
       desc:  'One sentence on what it is.',// optional
-      href:  'https://github.com/you/repo' }
+      href:  'https://github.com/you/repo',
+      favor: 2 }                           // optional; lower comes first in “favor”
   ],
   ...
 };
@@ -37,8 +38,10 @@ Only `title` is required.
 - **`href` is optional and the title *is* the link.** Leave the key out and the
   title renders as plain text with no dead link — add it later and the link
   appears. Five projects are intentionally unlinked this way.
-- **Order doesn't matter.** Each tab is sorted newest → oldest at render time,
-  with ongoing (`"2025 —"`) items first. Drop a new project anywhere in the array.
+- **Array order doesn't matter.** A tiny `the record / the story` control sits
+  on the left of the rail and reorders the row. Default is **the record**
+  (newest → oldest, ongoing first). **the story** uses the optional `favor` number
+  (lower first; omitted values sort last). The choice lasts for the session.
 - **Dates live on the timeline rail**, not in the card. A repeated year is shown
   once and the following projects just get an unlabelled node.
 - **Tags render in the casing you type** — no uppercase transform, so `HCI` and
@@ -70,20 +73,16 @@ One horizontal row you scroll sideways; the mouse wheel is translated to
 horizontal in JS. Cards dissolve into a `mask-image` fade at whichever edge
 still has content, with a small chevron on that side.
 
-Each tab deforms the *same* timeline rail rather than having its own motif, and
-each has its own card entrance. Both are tuned deliberately quiet — search the
-stylesheet for `one rail, three states` and `one grammar, three dialects`.
+The rail is full-page width; cards live in a centered window aligned with the
+bio, with edge fades at that window. Each tab deforms the same rail:
 
-| tab       | rail                                   | entrance                          |
-|-----------|----------------------------------------|-----------------------------------|
-| inventing | ruler ticks, majors on the nodes       | `scale(.988)` settle              |
-| surfacing | plain waterline                        | rises 8px, `blur(2px)` resolving  |
-| steering  | plain; the row sits under perspective  | 9px lateral, `1.1deg` correction  |
+| tab       | rail                                      | cards                                      |
+|-----------|-------------------------------------------|--------------------------------------------|
+| steering  | hairline jogs around quiet implied blocks | offset lanes; focused card steers the jog  |
+| inventing | ruler ticks across the page               | square cards on the straight edge          |
+| surfacing | wide arc                                  | oval hue clouds that rise toward the apex  |
 
-Constant across all three: the easing, the ~.26s duration, the 22ms per-card
-stagger, and the resting state. Only the vector of arrival changes. Steering
-additionally turns each card through ±13° as it scrolls past, via a scroll-driven
-CSS animation. All of it collapses under `prefers-reduced-motion: reduce`.
+`prefers-reduced-motion: reduce` skips path travel; opacity changes are instant.
 
 ## Other things to change
 
