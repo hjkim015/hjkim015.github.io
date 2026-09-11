@@ -1,18 +1,253 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>hannah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2f3c;
+    --paper:#dfe7ea;
+    --accent:#1e3f8f;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --serif:'Newsreader',Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);-webkit-font-smoothing:antialiased}
+  a{color:var(--ink);text-decoration:none}
 
-<div class="posts">
-  {% for post in site.posts %}
-    <article class="post">
+  .page{position:relative;min-height:100vh;display:flex;flex-direction:column;
+        padding:clamp(84px,15vh,150px) clamp(22px,6vw,86px) clamp(96px,13vh,130px);overflow:hidden}
+  .grain,.wash{position:absolute;inset:0;pointer-events:none;z-index:1}
+  .grain{opacity:.45;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E")}
+  .wash{background-image:
+    radial-gradient(ellipse at 24% 8%,  rgba(92,140,170,.30), rgba(0,0,0,0) 58%),
+    radial-gradient(ellipse at 84% 88%, rgba(66,112,146,.24), rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, rgba(150,180,196,.26), rgba(0,0,0,0) 46%)}
 
-      <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+  .sig{position:absolute;top:clamp(22px,4vw,40px);left:clamp(22px,6vw,86px);z-index:3;
+       height:clamp(30px,3.6vw,44px);width:auto;display:block;opacity:.8}
 
-      <div class="entry">
-        {{ post.excerpt }}
-      </div>
+  .main{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
+        text-align:center;gap:clamp(12px,2.2vh,20px);width:100%}
+  .hi{font:300 clamp(22px,3vw,36px)/1.15 var(--serif);font-style:italic;color:rgba(27,47,60,.72)}
 
-      <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
-    </article>
-  {% endfor %}
+  /* ---- name: halves slide apart, handwriting surfaces ---- */
+  .stage{position:relative;display:flex;align-items:center;justify-content:center;
+         perspective:1150px;padding:clamp(8px,1.2vh,14px) clamp(10px,3vw,40px) clamp(10px,1.6vh,18px);
+         cursor:pointer;user-select:none}
+  .name{display:flex;align-items:center;transform-style:preserve-3d}
+  .name span{font:300 clamp(52px,11vw,132px)/1 var(--serif);letter-spacing:.005em;display:inline-block;
+             backface-visibility:hidden;
+             transition:transform .8s cubic-bezier(.19,1.06,.3,1),filter .6s ease,opacity .6s ease}
+  .stage.on .name .l{transform:translate3d(-152px,0,-70px)}
+  .stage.on .name .r{transform:translate3d(152px,0,-70px)}
+  .stage.on .name span{filter:blur(1.1px);opacity:.38}
+
+  .surface{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
+  .surface i{position:absolute;left:50%;top:50%;
+    height:clamp(44px,5.2vw,72px);width:calc(clamp(44px,5.2vw,72px) * 2.941);
+    margin-left:calc(clamp(44px,5.2vw,72px) * -1.4705);margin-top:calc(clamp(44px,5.2vw,72px) * -.5);
+    background:url(ink-living-slate.png) center/contain no-repeat;
+    transform:translate3d(0,0,-560px);opacity:0;filter:blur(7px);
+    transition:transform .85s cubic-bezier(.19,1.06,.3,1) .06s,opacity .5s ease .06s,filter .6s ease .06s}
+  .stage.on .surface i{transform:translate3d(0,0,0) rotate(-3.2deg);opacity:1;filter:blur(0)}
+
+  /* ---- one-line bio + menu ---- */
+  .barrow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 2px;
+          font:400 13px var(--mono);letter-spacing:.05em;color:rgba(27,47,60,.75)}
+  .barrow .lead{white-space:nowrap;padding-right:8px}
+  .barrow .sep{color:rgba(27,47,60,.45);user-select:none}
+  .tab{appearance:none;background:none;border:0;border-bottom:1px solid transparent;color:inherit;
+       font:400 13px var(--mono);letter-spacing:.05em;cursor:pointer;
+       position:relative;display:inline-block;min-width:10ch;height:1.9em;
+       padding:4px 10px 5px;perspective:500px;transition:border-color .25s ease}
+  .tab[data-key="steering"]{min-width:9ch}
+  .tab[aria-expanded="true"]{border-bottom-color:var(--accent)}
+  .flip{position:absolute;inset:0;transform-style:preserve-3d;
+        transition:transform .68s cubic-bezier(.32,.9,.3,1)}
+  .tab:hover .flip,.tab[aria-expanded="true"] .flip{transform:rotateX(-180deg)}
+  .face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+        backface-visibility:hidden;white-space:nowrap;color:var(--accent)}
+  .back{position:absolute;inset:0;backface-visibility:hidden;transform:rotateX(180deg);
+        background-position:center;background-repeat:no-repeat;background-size:auto 78%}
+
+  /* ---- project list ---- */
+  .panelwrap{position:relative;width:100%;display:flex;flex-direction:column;align-items:center}
+  .panel{position:absolute;top:100%;left:0;right:0;width:100%;overflow:hidden;max-height:0;opacity:0;
+         transition:max-height .55s cubic-bezier(.22,1,.36,1),opacity .35s ease}
+  .panel.open{max-height:min(460px,46vh);opacity:1;padding-top:18px;overflow-y:auto}
+  .list{width:min(92vw,660px);margin:0 auto;text-align:left;padding-bottom:16px}
+  .item{padding:12px 0;border-bottom:1px solid rgba(27,47,60,.16)}
+  .item .top,.item .bot{display:flex;align-items:baseline;justify-content:space-between;gap:18px}
+  .item .bot{margin-top:4px}
+  .item .title{font:300 clamp(17px,1.9vw,22px)/1.3 var(--serif);
+               border-bottom:1px solid rgba(27,47,60,.25);padding-bottom:2px}
+  .item .title:hover{border-bottom-color:var(--accent);color:var(--accent)}
+  .date{font:400 11px var(--mono);letter-spacing:.1em;color:rgba(27,47,60,.78);white-space:nowrap}
+  .desc{margin:0;font:300 clamp(14px,1.5vw,16px)/1.6 var(--serif);color:rgba(27,47,60,.76);
+        max-width:46ch;text-wrap:pretty}
+  .tag{font:400 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+       border:1px solid rgba(30,63,143,.38);border-radius:999px;padding:3px 9px;
+       white-space:nowrap;align-self:flex-end}
+  .linkrow{margin-top:7px}
+  .link{font:400 11px var(--mono);letter-spacing:.08em;color:var(--accent);
+        border-bottom:1px dashed rgba(30,63,143,.5);padding-bottom:1px}
+  .link:hover{border-bottom-style:solid}
+
+  /* ---- footer ---- */
+  .foot{position:absolute;left:clamp(22px,6vw,86px);bottom:clamp(22px,4vw,40px);z-index:2;
+        display:flex;flex-wrap:wrap;align-items:center;font:400 12px var(--mono);letter-spacing:.06em;
+        transition:opacity .35s ease}
+  .foot a{color:rgba(27,47,60,.78);padding:0 9px}
+  .foot a:first-child{padding-left:0}
+  .foot a:last-child{padding-right:0}
+  .foot a:hover{color:var(--accent)}
+  .foot .sep{color:rgba(27,47,60,.42);user-select:none}
+
+  @media (max-width:720px){
+    .barrow .lead{flex:1 1 100%;padding:0 0 6px;text-align:center}
+    .stage.on .name .l{transform:translate3d(-96px,0,-70px)}
+    .stage.on .name .r{transform:translate3d(96px,0,-70px)}
+  }
+  @media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms !important} }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="grain"></div>
+  <div class="wash"></div>
+
+  <img class="sig" src="ink-signature-slate.png" alt="hannah">
+
+  <main class="main">
+    <div class="hi">hi, i'm</div>
+
+    <div class="stage" id="stage">
+      <div class="name"><span class="l">han</span><span class="r">nah</span></div>
+      <div class="surface"><i role="img" aria-label="living in −1"></i></div>
+    </div>
+
+    <div class="panelwrap">
+      <nav class="barrow" id="menu">
+        <span class="lead">a human pursuing a meaningful life through</span>
+        <button class="tab" data-key="inventing" aria-expanded="false">
+          <span class="flip"><span class="face">inventing</span><span class="back" style="background-image:url(ink-technology.png)"></span></span>
+        </button>
+        <span class="sep">/</span>
+        <button class="tab" data-key="surfacing" aria-expanded="false">
+          <span class="flip"><span class="face">surfacing</span><span class="back" style="background-image:url(ink-blind-spots.png)"></span></span>
+        </button>
+        <span class="sep">/</span>
+        <button class="tab" data-key="steering" aria-expanded="false">
+          <span class="flip"><span class="face">steering</span><span class="back" style="background-image:url(ink-culture.png)"></span></span>
+        </button>
+      </nav>
+
+      <div class="panel" id="panel"><div class="list" id="list"></div></div>
+    </div>
+  </main>
+
+  <footer class="foot" id="foot">
+    <a href="https://linkedin.com/in/YOUR-HANDLE">linkedin</a><span class="sep">/</span>
+    <a href="https://github.com/YOUR-HANDLE">github</a><span class="sep">/</span>
+    <a href="https://x.com/YOUR-HANDLE">x</a><span class="sep">/</span>
+    <a href="mailto:you@example.com">email</a>
+  </footer>
 </div>
+
+<script>
+/* ============================================================
+   EDIT YOUR PROJECTS HERE — this is the only block you touch.
+   tag:  software | writing | leadership | research
+   href: paste the real URL; linkLabel is what the link reads as
+   ============================================================ */
+const PROJECTS = {
+  inventing: [
+    { title: 'evaluation infrastructure', date: '2026 —', tag: 'software',
+      desc: 'Tooling that makes model quality legible before anything ships.',
+      href: '#', linkLabel: 'add link →' },
+    { title: 'model release standards', date: '2025', tag: 'research',
+      desc: 'A bar for what counts as ready, written down and enforced.',
+      href: '#', linkLabel: 'add link →' },
+    { title: 'data pipeline rewrite', date: '2024', tag: 'software',
+      desc: 'Rebuilt ingestion so provenance survives every transformation.',
+      href: '#', linkLabel: 'add link →' }
+  ],
+  surfacing: [
+    { title: 'what the evals miss', date: '2026', tag: 'research',
+      desc: 'The failure modes that pass every benchmark we have.',
+      href: '#', linkLabel: 'add link →' },
+    { title: 'failure taxonomies', date: '2025', tag: 'research',
+      desc: 'A shared vocabulary for how systems break in practice.',
+      href: '#', linkLabel: 'add link →' },
+    { title: 'notes on first principles', date: 'ongoing', tag: 'writing',
+      desc: 'Working notes on reasoning from the bottom rather than the middle.',
+      href: '#', linkLabel: 'add link →' }
+  ],
+  steering: [
+    { title: 'review standards working group', date: 'ongoing', tag: 'leadership',
+      desc: 'Setting what teams agree is acceptable before anyone is watching.',
+      href: '#', linkLabel: 'add link →' },
+    { title: 'what deserves to exist', date: '2025', tag: 'writing',
+      desc: 'On prioritisation as an ethical question, not a planning one.',
+      href: '#', linkLabel: 'add link →' },
+    { title: 'mentoring · early engineers', date: 'ongoing', tag: 'leadership',
+      desc: 'Teaching people to ask why before they are senior enough to.',
+      href: '#', linkLabel: 'add link →' }
+  ]
+};
+/* ========================= end edit ========================= */
+
+const stage = document.getElementById('stage');
+const panel = document.getElementById('panel');
+const list  = document.getElementById('list');
+const foot  = document.getElementById('foot');
+let openKey = null;
+
+stage.addEventListener('mouseenter', () => stage.classList.add('on'));
+stage.addEventListener('mouseleave', () => stage.classList.remove('on'));
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function render(key){
+  list.innerHTML = (PROJECTS[key] || []).map((p, i) => `
+    <article class="item" style="opacity:0;transform:translateY(6px);
+      transition:opacity .4s ease ${(0.05 + i * 0.06).toFixed(2)}s,
+                 transform .4s cubic-bezier(.22,1,.36,1) ${(0.05 + i * 0.06).toFixed(2)}s">
+      <div class="top">
+        <a class="title" href="${esc(p.href)}">${esc(p.title)}</a>
+        <span class="date">${esc(p.date)}</span>
+      </div>
+      <div class="bot">
+        <p class="desc">${esc(p.desc)}</p>
+        <span class="tag">${esc(p.tag)}</span>
+      </div>
+      <div class="linkrow">
+        <a class="link" href="${esc(p.href)}">${esc(p.linkLabel || 'add link →')}</a>
+      </div>
+    </article>`).join('');
+  requestAnimationFrame(() => {
+    list.querySelectorAll('.item').forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; });
+  });
+}
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.dataset.key;
+    openKey = openKey === key ? null : key;
+    document.querySelectorAll('.tab').forEach(b =>
+      b.setAttribute('aria-expanded', String(b.dataset.key === openKey)));
+    panel.classList.toggle('open', !!openKey);
+    foot.style.opacity = openKey ? '0' : '1';
+    foot.style.pointerEvents = openKey ? 'none' : 'auto';
+    if (openKey) render(openKey);
+  });
+});
+</script>
+</body>
+</html>
