@@ -4,42 +4,53 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>hannah</title>
+<link rel="icon" type="image/png" sizes="48x48" href="favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&family=IBM+Plex+Mono:wght@400&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#1b2f3c;
-    --paper:#dfe7ea;
-    --accent:#1e3f8f;
+    --paper:#f5f8fa;
+    --ink:#0d1b26;
+    --ink-2:#3f5462;
+    --ink-3:#5c6f7c;
+    --rule:#ccd9e1;
+    --navy:#0a2a6b;
+    --navy-deep:#061e4d;
     --mono:'IBM Plex Mono',ui-monospace,monospace;
     --serif:'Newsreader',Georgia,serif;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);-webkit-font-smoothing:antialiased}
+  html,body{height:100%;margin:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--serif);-webkit-font-smoothing:antialiased;overflow:hidden}
   a{color:var(--ink);text-decoration:none}
 
-  .page{position:relative;min-height:100vh;display:flex;flex-direction:column;
-        padding:clamp(84px,15vh,150px) clamp(22px,6vw,86px) clamp(96px,13vh,130px);overflow:hidden}
+  .page{position:relative;height:100dvh;display:flex;flex-direction:column;
+        --side:max(1in, 24px);
+        padding:clamp(96px,10.5vh,128px) var(--side) 0;overflow:hidden}
   .grain,.wash{position:absolute;inset:0;pointer-events:none;z-index:1}
-  .grain{opacity:.45;mix-blend-mode:multiply;
+  .grain{opacity:.15;mix-blend-mode:multiply;
     background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E")}
   .wash{background-image:
-    radial-gradient(ellipse at 24% 8%,  rgba(92,140,170,.30), rgba(0,0,0,0) 58%),
-    radial-gradient(ellipse at 84% 88%, rgba(66,112,146,.24), rgba(0,0,0,0) 60%),
-    linear-gradient(180deg, rgba(150,180,196,.26), rgba(0,0,0,0) 46%)}
+    radial-gradient(ellipse at 24% 8%,  rgba(92,140,170,.085), rgba(0,0,0,0) 58%),
+    radial-gradient(ellipse at 84% 88%, rgba(66,112,146,.07), rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, rgba(150,180,196,.07), rgba(0,0,0,0) 46%)}
 
-  .sig{position:absolute;top:clamp(22px,4vw,40px);left:clamp(22px,6vw,86px);z-index:3;
-       height:clamp(30px,3.6vw,44px);width:auto;display:block;opacity:.8}
+  .sig{position:absolute;top:clamp(14px,2.6vw,28px);left:var(--side);z-index:3;
+       height:clamp(28px,3.4vw,42px);width:auto;display:block;
+       opacity:1;filter:brightness(0) contrast(1.08)}
 
   .main{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
-        text-align:center;gap:clamp(12px,2.2vh,20px);width:100%}
-  .hi{font:300 clamp(22px,3vw,36px)/1.15 var(--serif);font-style:italic;color:rgba(27,47,60,.72)}
+        text-align:center;flex:1 1 auto;min-height:0;width:100%;overflow:hidden}
+  .hi{font:300 clamp(22px,3vw,36px)/1.15 var(--serif);font-style:italic;color:var(--ink-3);
+      margin:0 0 clamp(2px,.4vh,6px)}
 
   /* ---- name: halves slide apart, handwriting surfaces ---- */
   .stage{position:relative;display:flex;align-items:center;justify-content:center;
-         perspective:1150px;padding:clamp(8px,1.2vh,14px) clamp(10px,3vw,40px) clamp(10px,1.6vh,18px);
-         cursor:pointer;user-select:none}
+         perspective:1150px;padding:clamp(2px,.4vh,8px) clamp(10px,3vw,40px) 0;
+         cursor:pointer;user-select:none;flex:0 0 auto}
   .name{display:flex;align-items:center;transform-style:preserve-3d}
   .name span{font:300 clamp(52px,11vw,132px)/1 var(--serif);letter-spacing:.005em;display:inline-block;
              backface-visibility:hidden;
@@ -48,73 +59,147 @@
   .stage.on .name .r{transform:translate3d(152px,0,-70px)}
   .stage.on .name span{filter:blur(1.1px);opacity:.38}
 
-  .surface{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
-  .surface i{position:absolute;left:50%;top:50%;
-    height:clamp(44px,5.2vw,72px);width:calc(clamp(44px,5.2vw,72px) * 2.941);
-    margin-left:calc(clamp(44px,5.2vw,72px) * -1.4705);margin-top:calc(clamp(44px,5.2vw,72px) * -.5);
-    background:url(ink-living-slate.png) center/contain no-repeat;
+  .surface{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+           transform-style:preserve-3d;pointer-events:none}
+  .surface i{font:600 clamp(28px,5vw,62px)/1.1 'Caveat',var(--serif);font-style:normal;
+    color:var(--ink);white-space:nowrap;
     transform:translate3d(0,0,-560px);opacity:0;filter:blur(7px);
     transition:transform .85s cubic-bezier(.19,1.06,.3,1) .06s,opacity .5s ease .06s,filter .6s ease .06s}
   .stage.on .surface i{transform:translate3d(0,0,0) rotate(-3.2deg);opacity:1;filter:blur(0)}
 
-  /* ---- one-line bio + menu ---- */
-  .barrow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 2px;
-          font:400 13px var(--mono);letter-spacing:.05em;color:rgba(27,47,60,.75)}
-  .barrow .lead{white-space:nowrap;padding-right:8px}
-  .barrow .sep{color:rgba(27,47,60,.45);user-select:none}
-  .tab{appearance:none;background:none;border:0;border-bottom:1px solid transparent;color:inherit;
-       font:400 13px var(--mono);letter-spacing:.05em;cursor:pointer;
-       position:relative;display:inline-block;min-width:10ch;height:1.9em;
-       padding:4px 10px 5px;perspective:500px;transition:border-color .25s ease}
-  .tab[data-key="steering"]{min-width:9ch}
-  .tab[aria-expanded="true"]{border-bottom-color:var(--accent)}
+  /* ---- one-line bio + menu (tabs continue the sentence) ---- */
+  .panelwrap{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;
+             flex:1 1 auto;min-height:0;overflow:hidden}
+  .barrow{display:flex;flex-wrap:nowrap;justify-content:center;align-items:baseline;gap:0;
+          font:300 clamp(16px,1.2vw + 7.5px,25px)/1.28 var(--serif);letter-spacing:.01em;
+          color:var(--ink);
+          flex:0 0 auto;margin-top:clamp(4px,.7vh,10px);white-space:nowrap;max-width:100%}
+  .barrow .lead{white-space:nowrap;padding-right:.7em;flex:0 0 auto}
+  .tabs{display:inline-flex;flex-wrap:nowrap;align-items:baseline;flex:0 0 auto;white-space:nowrap}
+  .barrow .sep{color:var(--ink-3);user-select:none;padding:0 .72em}
+  .tab{appearance:none;background:none;border:0;border-bottom:1px solid transparent;
+       font:inherit;color:var(--navy);letter-spacing:inherit;cursor:pointer;
+       position:relative;display:inline-block;
+       padding:.08em .2em;perspective:600px;transition:border-color .25s ease,color .25s ease}
+  .tab .ghost{display:block;visibility:hidden;white-space:nowrap}
+  .tab:hover{border-bottom-color:var(--navy);color:var(--navy-deep)}
+  .tab[aria-expanded="true"]{border-bottom-color:var(--navy);color:var(--navy-deep)}
   .flip{position:absolute;inset:0;transform-style:preserve-3d;
         transition:transform .68s cubic-bezier(.32,.9,.3,1)}
   .tab:hover .flip,.tab[aria-expanded="true"] .flip{transform:rotateX(-180deg)}
   .face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-        backface-visibility:hidden;white-space:nowrap;color:var(--accent)}
-  .back{position:absolute;inset:0;backface-visibility:hidden;transform:rotateX(180deg);
-        background-position:center;background-repeat:no-repeat;background-size:auto 78%}
+        backface-visibility:hidden;white-space:nowrap;color:var(--navy);
+        transition:color .25s ease}
+  .tab:hover .face,.tab[aria-expanded="true"] .face{color:var(--navy-deep)}
+  .back{position:absolute;top:1px;bottom:1px;left:-.62em;right:-.62em;
+        backface-visibility:hidden;transform:rotateX(180deg);
+        background-position:center;background-repeat:no-repeat;background-size:contain}
 
-  /* ---- project list ---- */
-  .panelwrap{position:relative;width:100%;display:flex;flex-direction:column;align-items:center}
-  .panel{position:absolute;top:100%;left:0;right:0;width:100%;overflow:hidden;max-height:0;opacity:0;
-         transition:max-height .55s cubic-bezier(.22,1,.36,1),opacity .35s ease}
-  .panel.open{max-height:min(460px,46vh);opacity:1;padding-top:18px;overflow-y:auto}
-  .list{width:min(92vw,660px);margin:0 auto;text-align:left;padding-bottom:16px}
-  .item{padding:12px 0;border-bottom:1px solid rgba(27,47,60,.16)}
-  .item .top,.item .bot{display:flex;align-items:baseline;justify-content:space-between;gap:18px}
-  .item .bot{margin-top:4px}
-  .item .title{font:300 clamp(17px,1.9vw,22px)/1.3 var(--serif);
-               border-bottom:1px solid rgba(27,47,60,.25);padding-bottom:2px}
-  .item .title:hover{border-bottom-color:var(--accent);color:var(--accent)}
-  .date{font:400 11px var(--mono);letter-spacing:.1em;color:rgba(27,47,60,.78);white-space:nowrap}
-  .desc{margin:0;font:300 clamp(14px,1.5vw,16px)/1.6 var(--serif);color:rgba(27,47,60,.76);
-        max-width:46ch;text-wrap:pretty}
-  .tag{font:400 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
-       border:1px solid rgba(30,63,143,.38);border-radius:999px;padding:3px 9px;
-       white-space:nowrap;align-self:flex-end}
-  .linkrow{margin-top:7px}
-  .link{font:400 11px var(--mono);letter-spacing:.08em;color:var(--accent);
-        border-bottom:1px dashed rgba(30,63,143,.5);padding-bottom:1px}
-  .link:hover{border-bottom-style:solid}
+  .panel{width:100%;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
+         opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .panel.open{opacity:1;pointer-events:auto}
+  .panel-inner{min-height:0;overflow:hidden;position:relative;
+               display:flex;flex-direction:column;align-items:center;
+               width:100%;flex:1 1 auto;padding-top:clamp(28px,4vh,48px)}
 
-  /* ---- footer ---- */
-  .foot{position:absolute;left:clamp(22px,6vw,86px);bottom:clamp(22px,4vw,40px);z-index:2;
+  .gallery{position:relative;width:min(100%,980px);max-height:100%;
+           display:flex;flex-direction:column;align-items:stretch;
+           outline:none;flex:1 1 auto;min-height:0}
+
+  .card{position:absolute;left:0;top:0;text-align:left;margin:0;
+        width:var(--card,220px);opacity:0;pointer-events:none;
+        background:var(--paper);
+        transition:opacity .42s ease}
+  .card.is-on{pointer-events:auto;z-index:4}
+  .card.is-side{z-index:2}
+  .title{font:400 clamp(14px,1.4vw,19px)/1.28 var(--serif);color:var(--ink);
+         padding-bottom:2px;text-wrap:pretty}
+  a.title{border-bottom:1px solid var(--rule);
+          transition:color .18s ease,border-color .18s ease}
+  a.title:hover{border-bottom-color:var(--navy);color:var(--navy)}
+  .role{margin-top:6px;font:300 italic clamp(12px,1.2vw,14px)/1.4 var(--serif);
+        color:var(--ink-3)}
+  .desc{margin:6px 0 0;font:300 clamp(13px,1.25vw,15px)/1.5 var(--serif);color:var(--ink-2);
+        text-wrap:pretty;
+        display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .desc.forthcoming{font-style:italic;color:var(--ink-3);-webkit-line-clamp:2}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .tag{font:400 10px var(--mono);letter-spacing:.06em;color:var(--navy);
+       border:1px solid color-mix(in srgb, var(--navy) 34%, var(--paper));
+       border-radius:999px;padding:3px 9px;white-space:nowrap}
+
+  .railwrap{position:relative;width:100%;flex:1 1 auto;min-height:0;max-height:100%;
+            margin:0;overflow:hidden;display:flex;align-items:stretch}
+  .railclip{position:relative;flex:1 1 auto;min-width:0;min-height:0;height:auto;
+            -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 48px,#000 calc(100% - 48px),transparent);
+            mask-image:linear-gradient(90deg,transparent 0,#000 48px,#000 calc(100% - 48px),transparent)}
+  .rail{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
+  .rail .stroke{fill:none;stroke:var(--rule);stroke-width:1;stroke-linecap:square;
+                stroke-linejoin:miter}
+  .rail .tick{stroke:var(--rule);stroke-width:1;stroke-linecap:square}
+  .apex{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;
+        background:var(--navy);opacity:.55;pointer-events:none;z-index:3}
+  .is-inventing .apex{width:1px;height:12px;margin:-6px 0 0 -.5px;border-radius:0;background:var(--ink-3);opacity:.9}
+  .is-steering .apex{display:none}
+
+  .nudge{appearance:none;background:none;border:0;padding:0;flex:0 0 22px;align-self:center;
+         width:22px;height:22px;cursor:pointer;position:relative;
+         color:var(--ink-3);opacity:.42;transition:opacity .2s ease,color .2s ease}
+  .nudge:hover{opacity:.9;color:var(--navy)}
+  .nudge.is-off{opacity:0;pointer-events:none}
+  .nudge::before{content:'';position:absolute;left:50%;top:50%;
+                 width:7px;height:7px;margin:-4px 0 0 -5px;
+                 border-right:1px solid currentColor;border-top:1px solid currentColor;
+                 transform:rotate(45deg)}
+  .nudge-l::before{margin-left:-2px;transform:rotate(-135deg)}
+
+  .nodes{position:absolute;inset:0;pointer-events:none;z-index:5}
+  .yr{position:absolute;left:0;top:0;
+      font:400 10px var(--mono);letter-spacing:.12em;color:var(--ink-3);
+      white-space:nowrap;pointer-events:none;
+      transform:translate(-50%, calc(-100% - 8px))}
+
+  .belt{position:absolute;inset:0}
+
+  /* inventing — squares slide along the ruler */
+  .is-inventing .card{aspect-ratio:1;display:flex;flex-direction:column;
+                     border:1px solid var(--rule);border-radius:1px;padding:14px 16px 16px}
+  .is-inventing .desc{-webkit-line-clamp:unset;overflow:visible}
+  .is-inventing .tags{margin-top:auto;padding-top:10px}
+
+  /* surfacing — deeper arc; cards hang from the stroke and rise to the apex */
+  .is-surfacing .card{padding:10px 12px 12px;border-radius:1px;
+                     background:color-mix(in srgb, var(--paper) 92%, transparent)}
+  .is-surfacing .apex{box-shadow:0 0 0 6px color-mix(in srgb, var(--navy) 18%, transparent)}
+
+  /* steering — cards ride the jagged polyline */
+  .is-steering .card{padding:10px 12px 12px;
+                    background:color-mix(in srgb, var(--paper) 92%, transparent)}
+
+  .foot{position:relative;z-index:2;flex:0 0 auto;
         display:flex;flex-wrap:wrap;align-items:center;font:400 12px var(--mono);letter-spacing:.06em;
-        transition:opacity .35s ease}
-  .foot a{color:rgba(27,47,60,.78);padding:0 9px}
+        padding:clamp(12px,1.8vh,22px) 0 clamp(16px,3vw,28px)}
+  .foot a{color:var(--ink-2);padding:0 9px;transition:color .18s ease}
   .foot a:first-child{padding-left:0}
   .foot a:last-child{padding-right:0}
-  .foot a:hover{color:var(--accent)}
-  .foot .sep{color:rgba(27,47,60,.42);user-select:none}
+  .foot a:hover{color:var(--navy)}
+  .foot .sep{color:var(--ink-3);user-select:none}
 
   @media (max-width:720px){
-    .barrow .lead{flex:1 1 100%;padding:0 0 6px;text-align:center}
+    .page{--side:20px}
+    .barrow{flex-wrap:wrap;white-space:normal}
+    .barrow .lead{flex:1 1 100%;padding:0 0 10px;text-align:center;white-space:normal}
+    .tabs{flex:1 1 100%;justify-content:center}
     .stage.on .name .l{transform:translate3d(-96px,0,-70px)}
     .stage.on .name .r{transform:translate3d(96px,0,-70px)}
   }
-  @media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms !important} }
+  @media (max-height:740px){
+    .panel-inner{padding-top:clamp(18px,2.6vh,32px)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition-duration:.01ms !important;animation:none !important}
+    .card{transition:none}
+  }
 </style>
 </head>
 <body>
@@ -129,123 +214,462 @@
 
     <div class="stage" id="stage">
       <div class="name"><span class="l">han</span><span class="r">nah</span></div>
-      <div class="surface"><i role="img" aria-label="living in −1"></i></div>
+      <div class="surface"><i aria-label="existence between -1 to 0">existence between -1 to 0</i></div>
     </div>
 
     <div class="panelwrap">
       <nav class="barrow" id="menu">
-        <span class="lead">a human pursuing a meaningful life through</span>
-        <button class="tab" data-key="inventing" aria-expanded="false">
-          <span class="flip"><span class="face">inventing</span><span class="back" style="background-image:url(ink-technology.png)"></span></span>
-        </button>
-        <span class="sep">/</span>
-        <button class="tab" data-key="surfacing" aria-expanded="false">
-          <span class="flip"><span class="face">surfacing</span><span class="back" style="background-image:url(ink-blind-spots.png)"></span></span>
-        </button>
-        <span class="sep">/</span>
-        <button class="tab" data-key="steering" aria-expanded="false">
-          <span class="flip"><span class="face">steering</span><span class="back" style="background-image:url(ink-culture.png)"></span></span>
-        </button>
+        <span class="lead">just a human walking through life by…</span>
+        <span class="tabs">
+          <button class="tab" data-key="inventing" aria-expanded="false"><span class="ghost" aria-hidden="true">inventing</span><span class="flip"><span class="face">inventing</span><span class="back" style="background-image:url(ink-technology.png)"></span></span></button>
+          <span class="sep">/</span>
+          <button class="tab" data-key="surfacing" aria-expanded="false"><span class="ghost" aria-hidden="true">surfacing</span><span class="flip"><span class="face">surfacing</span><span class="back" style="background-image:url(ink-blind-spots.png)"></span></span></button>
+          <span class="sep">/</span>
+          <button class="tab" data-key="steering" aria-expanded="false"><span class="ghost" aria-hidden="true">steering</span><span class="flip"><span class="face">steering</span><span class="back" style="background-image:url(ink-culture.png)"></span></span></button>
+        </span>
       </nav>
 
-      <div class="panel" id="panel"><div class="list" id="list"></div></div>
+      <div class="panel" id="panel">
+        <div class="panel-inner">
+          <div class="gallery" id="gallery" tabindex="0" role="region"
+               aria-label="projects, scroll sideways">
+            <div class="railwrap" id="railwrap">
+              <button type="button" class="nudge nudge-l is-off" id="nudgeL" aria-label="previous project" disabled></button>
+              <div class="railclip" id="railclip">
+                <svg class="rail" id="rail" aria-hidden="true"></svg>
+                <div class="apex" id="apex"></div>
+                <div class="nodes" id="nodes"></div>
+                <div class="belt" id="belt"></div>
+              </div>
+              <button type="button" class="nudge nudge-r is-off" id="nudgeR" aria-label="next project" disabled></button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
   <footer class="foot" id="foot">
-    <a href="https://linkedin.com/in/YOUR-HANDLE">linkedin</a><span class="sep">/</span>
-    <a href="https://github.com/YOUR-HANDLE">github</a><span class="sep">/</span>
-    <a href="https://x.com/YOUR-HANDLE">x</a><span class="sep">/</span>
-    <a href="mailto:you@example.com">email</a>
+    <a href="https://linkedin.com/in/hjkim015" target="_blank" rel="noopener noreferrer">linkedin</a><span class="sep">/</span>
+    <a href="https://github.com/hjkim015" target="_blank" rel="noopener noreferrer">github</a><span class="sep">/</span>
+    <a href="https://x.com/hjkim0151" target="_blank" rel="noopener noreferrer">x</a><span class="sep">/</span>
+    <a href="mailto:hannah.kim@alumni.harvard.edu">email</a>
   </footer>
 </div>
 
 <script>
 /* ============================================================
    EDIT YOUR PROJECTS HERE — this is the only block you touch.
-   tag:  software | writing | leadership | research
-   href: paste the real URL; linkLabel is what the link reads as
+
+   Each of the three keys holds a flat array of entries:
+     { title, date, tag, desc, role, href }
+   title  required. everything else optional.
+   tag    one string, or an array for two pills: tag: ['founding','0–1']
+          written in the casing you want to see (tags are not uppercased).
+   role   optional italic line under the title (CV-style)
+   desc   optional one-liner
+   href   the URL. The title IS the link. Leave the key out and the title
+          renders as plain text — add it later and the link appears.
+   Dates live on the rail, not in the card.
    ============================================================ */
 const PROJECTS = {
   inventing: [
-    { title: 'evaluation infrastructure', date: '2026 —', tag: 'software',
-      desc: 'Tooling that makes model quality legible before anything ships.',
-      href: '#', linkLabel: 'add link →' },
-    { title: 'model release standards', date: '2025', tag: 'research',
-      desc: 'A bar for what counts as ready, written down and enforced.',
-      href: '#', linkLabel: 'add link →' },
-    { title: 'data pipeline rewrite', date: '2024', tag: 'software',
-      desc: 'Rebuilt ingestion so provenance survives every transformation.',
-      href: '#', linkLabel: 'add link →' }
+    { title: 'Ctrl+Alt+Defeat: Cybersecurity Virtual Simulation', date: '2026', tag: 'software' },
+    { title: 'Music262', date: '2025', tag: 'software',
+      desc: 'Peer-based distributed system for music synchronization.' },
+    { title: 'SPYDER: Drone Detection', date: '2025', tag: 'software' },
+    { title: 'DAPPS 4.0', date: '2023', tag: 'software',
+      desc: 'U.S. Census Bureau population projection.',
+      href: 'https://www.census.gov/data/software/dapps.html' },
+    { title: 'Questable', date: '2022', tag: 'software',
+      desc: 'Open-source edtech software.',
+      href: 'https://github.com/hcs-t4sg/questable' },
+    { title: 'Lawrence Hall of Science Marine Aquatic Exhibit', date: '2018', tag: 'robotics' }
   ],
   surfacing: [
-    { title: 'what the evals miss', date: '2026', tag: 'research',
-      desc: 'The failure modes that pass every benchmark we have.',
-      href: '#', linkLabel: 'add link →' },
-    { title: 'failure taxonomies', date: '2025', tag: 'research',
-      desc: 'A shared vocabulary for how systems break in practice.',
-      href: '#', linkLabel: 'add link →' },
-    { title: 'notes on first principles', date: 'ongoing', tag: 'writing',
-      desc: 'Working notes on reasoning from the bottom rather than the middle.',
-      href: '#', linkLabel: 'add link →' }
+    { title: "For Students, the Process of 'Becoming' is the Challenge No Chatbot Can Solve",
+      date: '2026', tag: 'human flourishing',
+      desc: 'Opinion piece for Tech Policy Press x Berkman Klein Center.',
+      href: 'https://www.techpolicy.press/for-students-the-process-of-becoming-is-the-challenge-no-chatbot-can-solve/' },
+    { title: 'HSYLC: The Age of the AI Agent', date: '2026', tag: 'human flourishing',
+      desc: 'Materials coming soon.' },
+    { title: 'Cambria', date: '2026', tag: 'interpretability',
+      desc: 'Emotion vectors over time in Claude.',
+      href: 'https://www.cbai.ai/cambria' },
+    { title: 'Kempner Institute', date: '2025', tag: 'diffusion models',
+      desc: 'Diffusion models.',
+      href: 'https://kempnerinstitute.harvard.edu/' },
+    { title: 'Dtak Lab', date: '2025', tag: 'HCI',
+      desc: 'Humanitarian negotiation and AI engagement.',
+      href: 'https://dtak.github.io/Negotiation/' },
+    { title: 'Kreiman Lab', date: '2023', tag: 'neuroAI',
+      desc: 'Neuroscience and AI.',
+      href: 'https://kreimanlab.com/' },
+    { title: 'Inaugural Braille Seminar', date: '2025', tag: 'accessibility',
+      desc: '3D tactile map for the blind.',
+      href: 'https://news.harvard.edu/gazette/story/2025/04/new-experiences-at-their-fingertips/' }
   ],
   steering: [
-    { title: 'review standards working group', date: 'ongoing', tag: 'leadership',
-      desc: 'Setting what teams agree is acceptable before anyone is watching.',
-      href: '#', linkLabel: 'add link →' },
-    { title: 'what deserves to exist', date: '2025', tag: 'writing',
-      desc: 'On prioritisation as an ethical question, not a planning one.',
-      href: '#', linkLabel: 'add link →' },
-    { title: 'mentoring · early engineers', date: 'ongoing', tag: 'leadership',
-      desc: 'Teaching people to ask why before they are senior enough to.',
-      href: '#', linkLabel: 'add link →' }
+    { title: 'Boston Diffusion Day', date: '2025 —', tag: ['founding','0–1'],
+      role: 'Co-Founder & Advisor',
+      desc: 'Pushed for the first ever Northeast academic symposium focused on generative modeling. Bootstrapped in 2 months with 2 people.',
+      href: 'https://bostondiffusionday.github.io/' },
+    { title: 'WECode', date: '2024', tag: 'leading',
+      role: 'Advisory Board, former Co-Chair and Co-Director of Engagement',
+      desc: "Led the world's largest undergraduate-run women in tech conference.",
+      href: 'https://www.wecodeconference.com/' },
+    { title: 'AI Safety Team at Harvard', date: '2024', tag: 'operating',
+      role: 'former Board Member, Technical & Policy Fellow',
+      desc: 'Pushing for artificial intelligence that is built safely and ethically.',
+      href: 'https://aisst.ai/' },
+    { title: 'Tech for Social Good', date: '2022', tag: 'operating',
+      role: 'Project Manager, Internal Research Committee',
+      desc: 'Pushing for projects that make technology helpful to everyone, and ensuring the organization itself is focused on mission.',
+      href: 'https://socialgood.hcs.harvard.edu/' }
   ]
 };
 /* ========================= end edit ========================= */
 
-const stage = document.getElementById('stage');
-const panel = document.getElementById('panel');
-const list  = document.getElementById('list');
-const foot  = document.getElementById('foot');
+const stage    = document.getElementById('stage');
+const panel    = document.getElementById('panel');
+const gallery  = document.getElementById('gallery');
+const rail     = document.getElementById('rail');
+const railclip = document.getElementById('railclip');
+const nodesEl  = document.getElementById('nodes');
+const belt     = document.getElementById('belt');
+const apex     = document.getElementById('apex');
+const nudgeL   = document.getElementById('nudgeL');
+const nudgeR   = document.getElementById('nudgeR');
+const calm     = matchMedia('(prefers-reduced-motion: reduce)');
 let openKey = null;
+let items = [];
+let t = 0;
+let shown = 0;
+let geo = null;
+let anim = 0;
+let wheelAcc = 0;
+let wheelLock = 0;
+let wheelDecay = 0;
+
+/* Wheel: ~2.5× less twitchy than 1-event / 280ms.
+   Pixel deltas scaled 0.4; step after 90 of accumulated delta; 520ms lock. */
+const WHEEL_SCALE = 0.4;
+const WHEEL_STEP = 90;
+const WHEEL_COOL = 520;
 
 stage.addEventListener('mouseenter', () => stage.classList.add('on'));
 stage.addEventListener('mouseleave', () => stage.classList.remove('on'));
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+function whenScore(date){
+  const s = String(date || '');
+  const year = Number((s.match(/\d{4}/) || [0])[0]);
+  const ongoing = /[—–-]\s*$|present|ongoing|now/i.test(s.replace(/\d{4}/, ''));
+  return year + (ongoing ? 0.5 : 0);
+}
+
+function pathLen(verts){
+  let n = 0;
+  for (let i = 1; i < verts.length; i++) n += Math.hypot(verts[i].x - verts[i-1].x, verts[i].y - verts[i-1].y);
+  return n;
+}
+
+function atLength(verts, dist){
+  if (!verts.length) return {x:0,y:0};
+  if (dist <= 0) return {...verts[0]};
+  for (let i = 1; i < verts.length; i++){
+    const dx = verts[i].x - verts[i-1].x, dy = verts[i].y - verts[i-1].y;
+    const len = Math.hypot(dx, dy);
+    if (dist <= len || i === verts.length - 1){
+      const u = len ? clamp(dist / len, 0, 1) : 0;
+      return {x: verts[i-1].x + dx * u, y: verts[i-1].y + dy * u};
+    }
+    dist -= len;
+  }
+  return {...verts[verts.length - 1]};
+}
+
+function spanFor(w){
+  return w < 520 ? 0.46 : 0.34;
+}
+
+function layout(mode, w, h){
+  const pad = 36;
+  const x1 = pad, x2 = w - pad;
+  const span = spanFor(w);
+  if (mode === 'inventing'){
+    const y = 30;
+    const spacing = (x2 - x1) * span;
+    const card = Math.round(clamp(spacing * 0.86, 128, Math.min(236, h - 48)));
+    return {
+      kind:'line', d:`M${x1},${y} H${x2}`, x1, x2, y, span, card, hang: 12,
+      at(u){ return {x: x1 + (x2 - x1) * u, y}; }
+    };
+  }
+  if (mode === 'surfacing'){
+    const card = Math.round(clamp(w * 0.24, 150, 210));
+    const cy = Math.max(h * 0.42, 96);
+    const rx = (x2 - x1) / 2;
+    const ry = Math.max(72, Math.min(rx * 0.72, cy - 22, h * 0.46));
+    const cx = w / 2;
+    const d = `M${x1.toFixed(1)},${cy.toFixed(1)} A${rx.toFixed(1)},${ry.toFixed(1)} 0 0 1 ${x2.toFixed(1)},${cy.toFixed(1)}`;
+    return {
+      kind:'arc', d, cx, cy, rx, ry, span, card, hang: 10,
+      at(u){
+        const a = Math.PI * (1 - u);
+        return {x: cx + rx * Math.cos(a), y: cy - ry * Math.sin(a)};
+      }
+    };
+  }
+  const card = Math.round(clamp(w * 0.24, 150, 220));
+  const yMid = Math.max(36, (h - 130) * 0.38);
+  const amp = Math.min((h - 140) * 0.28, 52);
+  const way = [
+    [0, .12], [0.16, .12], [0.16, -.95], [0.38, -.95],
+    [0.38, .95], [0.60, .95], [0.60, -.32], [0.80, -.32],
+    [0.80, .46], [1, .46]
+  ];
+  const verts = way.map(([p, v]) => ({x: x1 + (x2 - x1) * p, y: yMid + amp * v}));
+  const d = verts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join('');
+  const total = pathLen(verts);
+  return {
+    kind:'poly', d, verts, total, span, card, hang: 12,
+    at(u){ return atLength(verts, total * u); }
+  };
+}
+
+function atOff(off){
+  if (!geo) return {x:0,y:0};
+  const u = clamp(0.5 + off * geo.span, 0.02, 0.98);
+  return geo.at(u);
+}
+
+function cardOpacity(off){
+  const a = Math.abs(off);
+  if (a >= 1.22) return 0;
+  if (a <= 0.06) return 1;
+  return clamp(1 - (a / 1.18) * 0.62, 0.35, 1);
+}
+
+function yearLabel(i){
+  const d = String(items[i].date || '');
+  if (!d) return '';
+  const ongoing = /[—–-]\s*$|present|ongoing|now/i.test(d.replace(/\d{4}/, ''));
+  if (ongoing) return d;
+  if (i === 0) return d;
+  const prev = String(items[i - 1].date || '');
+  const y = (d.match(/\d{4}/) || [''])[0];
+  const py = (prev.match(/\d{4}/) || [''])[0];
+  return y && y === py ? '' : d;
+}
+
+function cardHTML(p){
+  const tags = [].concat(p.tag || []).filter(Boolean);
+  const title = esc(p.title);
+  const desc = p.desc
+    ? `<p class="desc">${esc(p.desc)}</p>`
+    : `<p class="desc forthcoming">description forthcoming.</p>`;
+  return `
+    ${p.href
+      ? `<a class="title" href="${esc(p.href)}" target="_blank" rel="noopener noreferrer">${title}</a>`
+      : `<span class="title">${title}</span>`}
+    ${p.role ? `<div class="role">${esc(p.role)}</div>` : ''}
+    ${desc}
+    ${tags.length ? `<div class="tags">${tags.map(tg => `<span class="tag">${esc(tg)}</span>`).join('')}</div>` : ''}`;
+}
+
+function setNudge(el, off){
+  el.classList.toggle('is-off', off);
+  el.disabled = off;
+}
+
+function paint(){
+  if (!geo || !items.length) return;
+  const hang = geo.hang;
+  items.forEach((_, i) => {
+    const el = belt.children[i];
+    if (!el) return;
+    const off = i - t;
+    const op = cardOpacity(off);
+    const pt = atOff(off);
+    el.style.transform = `translate(${pt.x}px, ${pt.y + hang}px) translate(-50%, 0)`;
+    el.style.opacity = String(op);
+    el.style.pointerEvents = op > 0.2 ? 'auto' : 'none';
+    el.classList.toggle('is-on', Math.abs(off) < 0.45);
+    el.classList.toggle('is-side', op > 0.05 && Math.abs(off) >= 0.45);
+    el.setAttribute('aria-hidden', op < 0.08 ? 'true' : 'false');
+  });
+
+  const focus = atOff(0);
+  apex.style.left = focus.x + 'px';
+  apex.style.top = focus.y + 'px';
+
+  const labels = [];
+  items.forEach((_, i) => {
+    const off = i - t;
+    if (Math.abs(off) > 1.18) return;
+    const yr = yearLabel(i);
+    if (!yr) return;
+    const pt = atOff(off);
+    labels.push(`<span class="yr" style="left:${pt.x}px;top:${pt.y}px;opacity:${cardOpacity(off).toFixed(2)}">${esc(yr)}</span>`);
+  });
+  nodesEl.innerHTML = labels.join('');
+  setNudge(nudgeL, shown <= 0);
+  setNudge(nudgeR, shown >= items.length - 1);
+}
+
+function draw(){
+  const w = railclip.clientWidth;
+  const h = railclip.clientHeight;
+  if (w < 8 || h < 8 || !openKey || !items.length) return;
+  geo = layout(openKey, w, h);
+  gallery.style.setProperty('--card', geo.card + 'px');
+  const parts = [`<path class="stroke" d="${geo.d}"/>`];
+  if (geo.kind === 'line'){
+    const units = 40;
+    for (let i = 0; i <= units; i++){
+      const x = geo.x1 + (geo.x2 - geo.x1) * i / units;
+      const hh = i % 8 === 0 ? 9 : i % 4 === 0 ? 5 : 3;
+      parts.push(`<line class="tick" x1="${x}" y1="${geo.y}" x2="${x}" y2="${geo.y + hh}"/>`);
+    }
+  }
+  rail.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  rail.setAttribute('preserveAspectRatio', 'none');
+  rail.innerHTML = parts.join('');
+  paint();
+}
+
+function animateT(to){
+  const from = t;
+  const start = performance.now();
+  const dur = 480;
+  cancelAnimationFrame(anim);
+  const tick = now => {
+    const p = Math.min(1, (now - start) / dur);
+    const e = 1 - Math.pow(1 - p, 3);
+    t = from + (to - from) * e;
+    paint();
+    if (p < 1) anim = requestAnimationFrame(tick);
+    else { t = to; paint(); }
+  };
+  anim = requestAnimationFrame(tick);
+}
+
+function go(i, instant){
+  const max = Math.max(items.length - 1, 0);
+  const next = clamp(i, 0, max);
+  shown = next;
+  if (instant || calm.matches){
+    cancelAnimationFrame(anim);
+    t = next;
+    paint();
+    return;
+  }
+  animateT(next);
+}
 
 function render(key){
-  list.innerHTML = (PROJECTS[key] || []).map((p, i) => `
-    <article class="item" style="opacity:0;transform:translateY(6px);
-      transition:opacity .4s ease ${(0.05 + i * 0.06).toFixed(2)}s,
-                 transform .4s cubic-bezier(.22,1,.36,1) ${(0.05 + i * 0.06).toFixed(2)}s">
-      <div class="top">
-        <a class="title" href="${esc(p.href)}">${esc(p.title)}</a>
-        <span class="date">${esc(p.date)}</span>
-      </div>
-      <div class="bot">
-        <p class="desc">${esc(p.desc)}</p>
-        <span class="tag">${esc(p.tag)}</span>
-      </div>
-      <div class="linkrow">
-        <a class="link" href="${esc(p.href)}">${esc(p.linkLabel || 'add link →')}</a>
-      </div>
-    </article>`).join('');
+  items = (PROJECTS[key] || []).slice().sort((a, b) => whenScore(b.date) - whenScore(a.date));
+  gallery.classList.remove('is-inventing', 'is-surfacing', 'is-steering');
+  gallery.classList.add('is-' + key);
+  shown = 0;
+  t = 0;
+  cancelAnimationFrame(anim);
+  belt.innerHTML = items.map((p, i) =>
+    `<article class="card" data-i="${i}">${cardHTML(p)}</article>`).join('');
+  nodesEl.innerHTML = '';
   requestAnimationFrame(() => {
-    list.querySelectorAll('.item').forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; });
+    draw();
+    requestAnimationFrame(draw);
   });
+}
+
+belt.addEventListener('click', e => {
+  const card = e.target.closest('.card');
+  if (!card) return;
+  const i = +card.dataset.i;
+  if (i !== shown){
+    e.preventDefault();
+    go(i, calm.matches);
+    gallery.focus();
+  }
+});
+
+nudgeL.addEventListener('click', () => { go(shown - 1, calm.matches); gallery.focus(); });
+nudgeR.addEventListener('click', () => { go(shown + 1, calm.matches); gallery.focus(); });
+
+panel.addEventListener('wheel', e => {
+  if (!openKey || items.length < 2) return;
+  const primary = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  if (!primary) return;
+  e.preventDefault();
+  let d = primary;
+  if (e.deltaMode === 1) d *= 40;
+  else if (e.deltaMode === 2) d *= 80;
+  else d *= WHEEL_SCALE;
+  if (Math.sign(d) && Math.sign(wheelAcc) && Math.sign(d) !== Math.sign(wheelAcc)) wheelAcc = 0;
+  wheelAcc += d;
+  clearTimeout(wheelDecay);
+  wheelDecay = setTimeout(() => { wheelAcc = 0; }, 220);
+  const now = Date.now();
+  if (now < wheelLock) return;
+  if (Math.abs(wheelAcc) < WHEEL_STEP) return;
+  const dir = Math.sign(wheelAcc);
+  wheelAcc = 0;
+  wheelLock = now + (calm.matches ? 90 : WHEEL_COOL);
+  go(shown + dir, calm.matches);
+}, {passive: false});
+
+gallery.addEventListener('keydown', e => {
+  if (!openKey || !items.length) return;
+  if (e.key === 'ArrowRight')      go(shown + 1, calm.matches);
+  else if (e.key === 'ArrowLeft')  go(shown - 1, calm.matches);
+  else if (e.key === 'Home')       go(0, calm.matches);
+  else if (e.key === 'End')        go(items.length - 1, calm.matches);
+  else return;
+  e.preventDefault();
+});
+
+window.addEventListener('resize', () => { if (openKey) draw(); });
+
+const FADE_MS = 200;
+let turn = 0, swapTimer = 0;
+
+function setCategory(key){
+  const me = ++turn;
+  clearTimeout(swapTimer);
+  const showing = panel.classList.contains('open');
+  panel.classList.remove('open');
+
+  const wait = (showing && !calm.matches) ? FADE_MS : 0;
+  swapTimer = setTimeout(() => {
+    if (me !== turn) return;
+    document.querySelectorAll('.tab').forEach(b =>
+      b.setAttribute('aria-expanded', String(b.dataset.key === key)));
+    if (key){
+      render(key);
+      panel.classList.add('open');
+      gallery.focus();
+    } else {
+      items = [];
+      geo = null;
+      shown = 0;
+      t = 0;
+      belt.innerHTML = '';
+      nodesEl.innerHTML = '';
+      rail.innerHTML = '';
+      setNudge(nudgeL, true);
+      setNudge(nudgeR, true);
+    }
+  }, wait);
 }
 
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
-    const key = btn.dataset.key;
-    openKey = openKey === key ? null : key;
-    document.querySelectorAll('.tab').forEach(b =>
-      b.setAttribute('aria-expanded', String(b.dataset.key === openKey)));
-    panel.classList.toggle('open', !!openKey);
-    foot.style.opacity = openKey ? '0' : '1';
-    foot.style.pointerEvents = openKey ? 'none' : 'auto';
-    if (openKey) render(openKey);
+    openKey = openKey === btn.dataset.key ? null : btn.dataset.key;
+    setCategory(openKey);
   });
 });
 </script>
