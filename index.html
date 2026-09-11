@@ -24,7 +24,16 @@
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
-  body{background:var(--paper);color:var(--ink);font-family:var(--serif);-webkit-font-smoothing:antialiased;overflow:hidden}
+  body{background:var(--paper);color:var(--ink);font-family:var(--serif);-webkit-font-smoothing:antialiased;overflow:hidden;
+       transition:background-color .55s ease,color .55s ease}
+  body.is-story{
+    --paper:#f1e8dc;
+    --ink:#1b1611;
+    --ink-2:#5a4e42;
+    --ink-3:#7a6d5f;
+    --rule:#d4c8b8;
+    --navy:#5c4030;
+    --navy-deep:#3d2a1e}
   a{color:var(--ink);text-decoration:none}
 
   .page{position:relative;height:100dvh;display:flex;flex-direction:column;
@@ -36,11 +45,18 @@
   .wash{background-image:
     radial-gradient(ellipse at 24% 8%,  rgba(92,140,170,.085), rgba(0,0,0,0) 58%),
     radial-gradient(ellipse at 84% 88%, rgba(66,112,146,.07), rgba(0,0,0,0) 60%),
-    linear-gradient(180deg, rgba(150,180,196,.07), rgba(0,0,0,0) 46%)}
+    linear-gradient(180deg, rgba(150,180,196,.07), rgba(0,0,0,0) 46%);
+    transition:opacity .55s ease}
+  body.is-story .wash{background-image:
+    radial-gradient(ellipse at 24% 8%,  rgba(186,150,108,.14), rgba(0,0,0,0) 58%),
+    radial-gradient(ellipse at 84% 88%, rgba(140,108,78,.10), rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, rgba(196,168,136,.10), rgba(0,0,0,0) 46%)}
 
   .sig{position:absolute;top:clamp(14px,2.6vw,28px);left:var(--side);z-index:3;
        height:clamp(28px,3.4vw,42px);width:auto;display:block;
-       opacity:1;filter:brightness(0) contrast(1.08)}
+       opacity:1;filter:brightness(0) contrast(1.08);
+       transition:filter .55s ease}
+  body.is-story .sig{filter:sepia(.4) brightness(.2) contrast(1.12)}
 
   .main{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
         text-align:center;flex:1 1 auto;min-height:0;width:100%;overflow:hidden}
@@ -98,18 +114,38 @@
   .panel{width:100%;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
          opacity:0;pointer-events:none;transition:opacity .2s ease}
   .panel.open{opacity:1;pointer-events:auto}
-  .panel-inner{min-height:0;overflow:hidden;position:relative;
-               display:flex;flex-direction:column;align-items:center;
-               width:100%;flex:1 1 auto;padding-top:clamp(28px,4vh,48px)}
 
-  .gallery{position:relative;width:min(100%,980px);max-height:100%;
-           display:flex;flex-direction:column;align-items:stretch;
+  .panel-inner{min-height:0;overflow:hidden;position:relative;
+               display:flex;flex-direction:column;align-items:stretch;
+               width:calc(100% + 2 * var(--side));
+               margin-left:calc(-1 * var(--side));
+               margin-right:calc(-1 * var(--side));
+               flex:1 1 auto;padding-top:clamp(18px,2.6vh,32px)}
+
+  .gallery{position:relative;width:100%;max-height:100%;
+           display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
            outline:none;flex:1 1 auto;min-height:0}
+
+  .railstage{position:relative;flex:1 1 auto;min-height:clamp(240px,42vh,420px);
+             display:flex;flex-direction:column}
+  .gallery.is-surfacing .railstage{min-height:clamp(280px,50vh,520px)}
+
+  .spectrum{position:absolute;inset:0;z-index:6;pointer-events:none;
+            font:400 10px/1.2 var(--mono);letter-spacing:.14em;color:var(--ink-3);
+            user-select:none}
+  .spectrum button{pointer-events:auto;position:absolute;left:50%;
+                   transform:translateX(-50%)}
+  .spectrum [data-sort="time"]{top:0}
+  .spectrum [data-sort="favor"]{bottom:0}
+
+  .railbleed{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:visible}
 
   .card{position:absolute;left:0;top:0;text-align:left;margin:0;
         width:var(--card,220px);opacity:0;pointer-events:none;
-        background:var(--paper);
-        transition:opacity .42s ease}
+        background:var(--paper);transform-origin:50% 0;
+        transition:opacity .42s ease,width .42s cubic-bezier(.22,1,.36,1)}
+  .card.is-on{width:calc(var(--card,220px) * 1.38)}
+  .card.is-on .desc{-webkit-line-clamp:5}
   .card.is-on{pointer-events:auto;z-index:4}
   .card.is-side{z-index:2}
   .title{font:400 clamp(14px,1.4vw,19px)/1.28 var(--serif);color:var(--ink);
@@ -128,22 +164,44 @@
        border:1px solid color-mix(in srgb, var(--navy) 34%, var(--paper));
        border-radius:999px;padding:3px 9px;white-space:nowrap}
 
-  .railwrap{position:relative;width:100%;flex:1 1 auto;min-height:0;max-height:100%;
-            margin:0;overflow:hidden;display:flex;align-items:stretch}
-  .railclip{position:relative;flex:1 1 auto;min-width:0;min-height:0;height:auto;
-            -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 48px,#000 calc(100% - 48px),transparent);
-            mask-image:linear-gradient(90deg,transparent 0,#000 48px,#000 calc(100% - 48px),transparent)}
+  .spectrum button{appearance:none;background:none;border:0;border-bottom:1px solid transparent;
+                   font:inherit;letter-spacing:inherit;color:var(--ink-3);cursor:pointer;
+                   padding:0 0 1px;transition:color .2s ease,border-color .2s ease}
+  .spectrum button:hover{color:var(--navy)}
+  .spectrum button[aria-pressed="true"]{color:var(--navy);border-bottom-color:var(--navy)}
+  .spectrum .dash{display:none}
+
+  .railwrap{position:relative;z-index:2;width:min(980px, calc(100% - 2 * var(--side)));
+            margin:0 auto;flex:1 1 auto;min-height:0;max-height:100%;
+            overflow:visible;display:flex;align-items:stretch}
+  .railclip{position:relative;flex:1 1 auto;min-width:0;min-height:0;height:auto;overflow:visible;
+            -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 56px,#000 calc(100% - 56px),transparent);
+            mask-image:linear-gradient(90deg,transparent 0,#000 56px,#000 calc(100% - 56px),transparent)}
   .rail{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
   .rail .stroke{fill:none;stroke:var(--rule);stroke-width:1;stroke-linecap:square;
                 stroke-linejoin:miter}
   .rail .tick{stroke:var(--rule);stroke-width:1;stroke-linecap:square}
-  .apex{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;
-        background:var(--navy);opacity:.55;pointer-events:none;z-index:3}
-  .is-inventing .apex{width:1px;height:12px;margin:-6px 0 0 -.5px;border-radius:0;background:var(--ink-3);opacity:.9}
-  .is-steering .apex{display:none}
+  .apex{display:none}
+  .is-steering .rail .stroke{stroke:color-mix(in srgb, var(--navy) 38%, var(--rule));stroke-linejoin:round}
+  .mark,.dot,.tick-node{position:absolute;left:0;top:0;pointer-events:none}
+  .mark{font:400 13px/1 var(--mono);color:var(--navy);letter-spacing:0;
+        transform:translate(-50%,-50%)}
+  .mark.is-now{font-size:15px}
+  .tick-node{width:1px;height:11px;background:var(--ink-3);
+             transform:translate(-50%,0)}
+  .tick-node.is-now{height:14px;background:var(--navy)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--navy);
+       transform:translate(-50%,-50%)}
+  .dot.is-now{animation:ripple 2.6s ease-out infinite}
+  @keyframes ripple{
+    0%{box-shadow:0 0 0 0 color-mix(in srgb, var(--navy) 34%, transparent),
+                  0 0 0 0 color-mix(in srgb, var(--navy) 18%, transparent)}
+    70%{box-shadow:0 0 0 7px transparent, 0 0 0 13px transparent}
+    100%{box-shadow:0 0 0 7px transparent, 0 0 0 13px transparent}
+  }
 
   .nudge{appearance:none;background:none;border:0;padding:0;flex:0 0 22px;align-self:center;
-         width:22px;height:22px;cursor:pointer;position:relative;
+         width:22px;height:22px;cursor:pointer;position:relative;z-index:4;
          color:var(--ink-3);opacity:.42;transition:opacity .2s ease,color .2s ease}
   .nudge:hover{opacity:.9;color:var(--navy)}
   .nudge.is-off{opacity:0;pointer-events:none}
@@ -159,7 +217,9 @@
       white-space:nowrap;pointer-events:none;
       transform:translate(-50%, calc(-100% - 8px))}
 
-  .belt{position:absolute;inset:0}
+  .belt{position:absolute;inset:0;transition:opacity .2s ease}
+  .nodes{transition:opacity .2s ease}
+  .belt.is-restir,.nodes.is-restir{opacity:0}
 
   /* inventing — squares slide along the ruler */
   .is-inventing .card{aspect-ratio:1;display:flex;flex-direction:column;
@@ -167,14 +227,36 @@
   .is-inventing .desc{-webkit-line-clamp:unset;overflow:visible}
   .is-inventing .tags{margin-top:auto;padding-top:10px}
 
-  /* surfacing — deeper arc; cards hang from the stroke and rise to the apex */
-  .is-surfacing .card{padding:10px 12px 12px;border-radius:1px;
-                     background:color-mix(in srgb, var(--paper) 92%, transparent)}
-  .is-surfacing .apex{box-shadow:0 0 0 6px color-mix(in srgb, var(--navy) 18%, transparent)}
+  .gallery.is-surfacing .card,
+  .gallery.is-surfacing .card.is-on{
+    padding:36px 28px 32px;border:0 !important;background:transparent !important;
+    box-shadow:none !important;isolation:auto;overflow:visible}
+  .hues{display:none}
+  .is-surfacing .hues{display:block;position:absolute;left:-20%;right:-20%;top:22%;bottom:-35%;
+                     z-index:-1;pointer-events:none}
+  .is-surfacing .hue{display:block;position:absolute;left:var(--hx,50%);top:var(--hy,62%);
+    width:var(--hs,64%);aspect-ratio:1 / 1;border-radius:50%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle closest-side,
+      color-mix(in srgb, var(--navy) calc(14% + var(--ht, 0) * 4%), transparent) 0%,
+      color-mix(in srgb, var(--navy) 6%, transparent) 35%,
+      transparent 72%);
+    box-shadow:none;filter:none;border:0;
+    opacity:calc(.4 + var(--presence, 0) * .45)}
+  .gallery.is-surfacing,
+  .gallery.is-surfacing .belt,
+  .gallery.is-surfacing .railclip,
+  .gallery.is-surfacing .railwrap,
+  .gallery.is-surfacing .railstage{overflow:visible}
 
-  /* steering — cards ride the jagged polyline */
-  .is-steering .card{padding:10px 12px 12px;
-                    background:color-mix(in srgb, var(--paper) 92%, transparent)}
+  /* steering — same footprint as inventing, turning plate instead of a square rule */
+  .is-steering .card{aspect-ratio:1;display:flex;flex-direction:column;
+                    padding:16px 18px 16px;border:0;
+                    border-radius:4px 28px 28px 4px;
+                    background:color-mix(in srgb, var(--paper) 82%, transparent);
+                    box-shadow:10px 2px 22px -12px color-mix(in srgb, var(--navy) 28%, transparent)}
+  .is-steering .desc{-webkit-line-clamp:unset;overflow:visible}
+  .is-steering .tags{margin-top:auto;padding-top:10px}
 
   .foot{position:relative;z-index:2;flex:0 0 auto;
         display:flex;flex-wrap:wrap;align-items:center;font:400 12px var(--mono);letter-spacing:.06em;
@@ -194,11 +276,15 @@
     .stage.on .name .r{transform:translate3d(96px,0,-70px)}
   }
   @media (max-height:740px){
-    .panel-inner{padding-top:clamp(18px,2.6vh,32px)}
+    .panel-inner{padding-top:clamp(12px,1.8vh,22px)}
+    .railstage{min-height:clamp(200px,40vh,300px)}
+    .gallery.is-surfacing .railstage{min-height:clamp(220px,46vh,360px)}
   }
   @media (prefers-reduced-motion:reduce){
     *{transition-duration:.01ms !important;animation:none !important}
     .card{transition:none}
+    .belt,.nodes{transition:none}
+    .dot.is-now{animation:none}
   }
 </style>
 </head>
@@ -219,13 +305,13 @@
 
     <div class="panelwrap">
       <nav class="barrow" id="menu">
-        <span class="lead">just a human walking through life by…</span>
+        <span class="lead">a human walking through life by…</span>
         <span class="tabs">
+          <button class="tab" data-key="steering" aria-expanded="false"><span class="ghost" aria-hidden="true">steering</span><span class="flip"><span class="face">steering</span><span class="back" style="background-image:url(ink-culture.png)"></span></span></button>
+          <span class="sep">/</span>
           <button class="tab" data-key="inventing" aria-expanded="false"><span class="ghost" aria-hidden="true">inventing</span><span class="flip"><span class="face">inventing</span><span class="back" style="background-image:url(ink-technology.png)"></span></span></button>
           <span class="sep">/</span>
           <button class="tab" data-key="surfacing" aria-expanded="false"><span class="ghost" aria-hidden="true">surfacing</span><span class="flip"><span class="face">surfacing</span><span class="back" style="background-image:url(ink-blind-spots.png)"></span></span></button>
-          <span class="sep">/</span>
-          <button class="tab" data-key="steering" aria-expanded="false"><span class="ghost" aria-hidden="true">steering</span><span class="flip"><span class="face">steering</span><span class="back" style="background-image:url(ink-culture.png)"></span></span></button>
         </span>
       </nav>
 
@@ -233,15 +319,23 @@
         <div class="panel-inner">
           <div class="gallery" id="gallery" tabindex="0" role="region"
                aria-label="projects, scroll sideways">
-            <div class="railwrap" id="railwrap">
-              <button type="button" class="nudge nudge-l is-off" id="nudgeL" aria-label="previous project" disabled></button>
-              <div class="railclip" id="railclip">
+            <div class="railstage">
+              <div class="railbleed" id="railbleed">
                 <svg class="rail" id="rail" aria-hidden="true"></svg>
                 <div class="apex" id="apex"></div>
                 <div class="nodes" id="nodes"></div>
-                <div class="belt" id="belt"></div>
               </div>
-              <button type="button" class="nudge nudge-r is-off" id="nudgeR" aria-label="next project" disabled></button>
+              <div class="railwrap" id="railwrap">
+                <button type="button" class="nudge nudge-l is-off" id="nudgeL" aria-label="previous project" disabled></button>
+                <div class="railclip" id="railclip">
+                  <div class="belt" id="belt"></div>
+                </div>
+                <button type="button" class="nudge nudge-r is-off" id="nudgeR" aria-label="next project" disabled></button>
+              </div>
+              <div class="spectrum" id="spectrum" role="group" aria-label="project order">
+                <button type="button" data-sort="time" aria-pressed="true">the record</button>
+                <button type="button" data-sort="favor" aria-pressed="false">the story</button>
+              </div>
             </div>
           </div>
         </div>
@@ -252,6 +346,7 @@
   <footer class="foot" id="foot">
     <a href="https://linkedin.com/in/hjkim015" target="_blank" rel="noopener noreferrer">linkedin</a><span class="sep">/</span>
     <a href="https://github.com/hjkim015" target="_blank" rel="noopener noreferrer">github</a><span class="sep">/</span>
+    <a href="https://hjkim.substack.com/" target="_blank" rel="noopener noreferrer">substack</a><span class="sep">/</span>
     <a href="https://x.com/hjkim0151" target="_blank" rel="noopener noreferrer">x</a><span class="sep">/</span>
     <a href="mailto:hannah.kim@alumni.harvard.edu">email</a>
   </footer>
@@ -262,90 +357,98 @@
    EDIT YOUR PROJECTS HERE — this is the only block you touch.
 
    Each of the three keys holds a flat array of entries:
-     { title, date, tag, desc, role, href }
+     { title, date, tag, desc, role, href, favor }
    title  required. everything else optional.
-   tag    one string, or an array for two pills: tag: ['founding','0–1']
+   tag    one string, or an array for two pills: tag: ['research','interpretability']
           written in the casing you want to see (tags are not uppercased).
    role   optional italic line under the title (CV-style)
    desc   optional one-liner
    href   the URL. The title IS the link. Leave the key out and the title
           renders as plain text — add it later and the link appears.
+   favor  optional number; lower comes first in “the story”.
+          omit and the project sorts after numbered ones.
    Dates live on the rail, not in the card.
    ============================================================ */
 const PROJECTS = {
-  inventing: [
-    { title: 'Ctrl+Alt+Defeat: Cybersecurity Virtual Simulation', date: '2026', tag: 'software' },
-    { title: 'Music262', date: '2025', tag: 'software',
-      desc: 'Peer-based distributed system for music synchronization.' },
-    { title: 'SPYDER: Drone Detection', date: '2025', tag: 'software' },
-    { title: 'DAPPS 4.0', date: '2023', tag: 'software',
-      desc: 'U.S. Census Bureau population projection.',
-      href: 'https://www.census.gov/data/software/dapps.html' },
-    { title: 'Questable', date: '2022', tag: 'software',
-      desc: 'Open-source edtech software.',
-      href: 'https://github.com/hcs-t4sg/questable' },
-    { title: 'Lawrence Hall of Science Marine Aquatic Exhibit', date: '2018', tag: 'robotics' }
-  ],
-  surfacing: [
-    { title: "For Students, the Process of 'Becoming' is the Challenge No Chatbot Can Solve",
-      date: '2026', tag: 'human flourishing',
-      desc: 'Opinion piece for Tech Policy Press x Berkman Klein Center.',
-      href: 'https://www.techpolicy.press/for-students-the-process-of-becoming-is-the-challenge-no-chatbot-can-solve/' },
-    { title: 'HSYLC: The Age of the AI Agent', date: '2026', tag: 'human flourishing',
-      desc: 'Materials coming soon.' },
-    { title: 'Cambria', date: '2026', tag: 'interpretability',
-      desc: 'Emotion vectors over time in Claude.',
-      href: 'https://www.cbai.ai/cambria' },
-    { title: 'Kempner Institute', date: '2025', tag: 'diffusion models',
-      desc: 'Diffusion models.',
-      href: 'https://kempnerinstitute.harvard.edu/' },
-    { title: 'Dtak Lab', date: '2025', tag: 'HCI',
-      desc: 'Humanitarian negotiation and AI engagement.',
-      href: 'https://dtak.github.io/Negotiation/' },
-    { title: 'Kreiman Lab', date: '2023', tag: 'neuroAI',
-      desc: 'Neuroscience and AI.',
-      href: 'https://kreimanlab.com/' },
-    { title: 'Inaugural Braille Seminar', date: '2025', tag: 'accessibility',
-      desc: '3D tactile map for the blind.',
-      href: 'https://news.harvard.edu/gazette/story/2025/04/new-experiences-at-their-fingertips/' }
-  ],
   steering: [
     { title: 'Boston Diffusion Day', date: '2025 —', tag: ['founding','0–1'],
       role: 'Co-Founder & Advisor',
       desc: 'Pushed for the first ever Northeast academic symposium focused on generative modeling. Bootstrapped in 2 months with 2 people.',
-      href: 'https://bostondiffusionday.github.io/' },
+      href: 'https://bostondiffusionday.github.io/', favor: 1 },
     { title: 'WECode', date: '2024', tag: 'leading',
       role: 'Advisory Board, former Co-Chair and Co-Director of Engagement',
       desc: "Led the world's largest undergraduate-run women in tech conference.",
-      href: 'https://www.wecodeconference.com/' },
+      href: 'https://www.wecodeconference.com/', favor: 2 },
     { title: 'AI Safety Team at Harvard', date: '2024', tag: 'operating',
       role: 'former Board Member, Technical & Policy Fellow',
       desc: 'Pushing for artificial intelligence that is built safely and ethically.',
-      href: 'https://aisst.ai/' },
+      href: 'https://aisst.ai/', favor: 3 },
     { title: 'Tech for Social Good', date: '2022', tag: 'operating',
       role: 'Project Manager, Internal Research Committee',
       desc: 'Pushing for projects that make technology helpful to everyone, and ensuring the organization itself is focused on mission.',
-      href: 'https://socialgood.hcs.harvard.edu/' }
+      href: 'https://socialgood.hcs.harvard.edu/', favor: 4 }
+  ],
+  inventing: [
+    { title: 'Ctrl+Alt+Defeat: Cybersecurity Virtual Simulation', date: '2026', tag: 'software', favor: 4 },
+    { title: 'Music262', date: '2025', tag: 'software',
+      desc: 'Peer-based distributed system for music synchronization.', favor: 3 },
+    { title: 'SPYDER: Drone Detection', date: '2025', tag: 'software', favor: 5 },
+    { title: 'DAPPS 4.0', date: '2023', tag: 'software',
+      desc: 'U.S. Census Bureau population projection.',
+      href: 'https://www.census.gov/data/software/dapps.html', favor: 1 },
+    { title: 'Questable', date: '2022', tag: 'software',
+      desc: 'Open-source edtech software.',
+      href: 'https://github.com/hcs-t4sg/questable', favor: 2 },
+    { title: 'Lawrence Hall of Science Marine Aquatic Exhibit', date: '2018', tag: 'robotics', favor: 6 }
+  ],
+  surfacing: [
+    { title: "For Students, the Process of 'Becoming' is the Challenge No Chatbot Can Solve",
+      date: '2026', tag: 'writing',
+      desc: 'Opinion piece for Tech Policy Press x Berkman Klein Center.',
+      href: 'https://www.techpolicy.press/for-students-the-process-of-becoming-is-the-challenge-no-chatbot-can-solve/',
+      favor: 1 },
+    { title: 'Inaugural Braille Seminar', date: '2025', tag: 'manufacturing',
+      desc: '3D tactile map for the blind.',
+      href: 'https://news.harvard.edu/gazette/story/2025/04/new-experiences-at-their-fingertips/',
+      favor: 2 },
+    { title: 'HSYLC: The Age of the AI Agent', date: '2026', tag: 'teaching',
+      desc: 'Materials coming soon.', favor: 3 },
+    { title: 'Cambria', date: '2026', tag: ['research','interpretability'],
+      desc: 'Emotion vectors over time in Claude.',
+      href: 'https://www.cbai.ai/cambria', favor: 4 },
+    { title: 'Kempner Institute', date: '2025', tag: 'diffusion models',
+      desc: 'Diffusion models.',
+      href: 'https://kempnerinstitute.harvard.edu/', favor: 5 },
+    { title: 'Dtak Lab', date: '2025', tag: 'HCI',
+      desc: 'Humanitarian negotiation and AI engagement.',
+      href: 'https://dtak.github.io/Negotiation/', favor: 6 },
+    { title: 'Kreiman Lab', date: '2023', tag: 'neuroAI',
+      desc: 'Neuroscience and AI.',
+      href: 'https://kreimanlab.com/', favor: 7 }
   ]
 };
 /* ========================= end edit ========================= */
 
-const stage    = document.getElementById('stage');
-const panel    = document.getElementById('panel');
-const gallery  = document.getElementById('gallery');
-const rail     = document.getElementById('rail');
-const railclip = document.getElementById('railclip');
-const nodesEl  = document.getElementById('nodes');
-const belt     = document.getElementById('belt');
-const apex     = document.getElementById('apex');
-const nudgeL   = document.getElementById('nudgeL');
-const nudgeR   = document.getElementById('nudgeR');
-const calm     = matchMedia('(prefers-reduced-motion: reduce)');
+const stage     = document.getElementById('stage');
+const panel     = document.getElementById('panel');
+const gallery   = document.getElementById('gallery');
+const railbleed = document.getElementById('railbleed');
+const rail      = document.getElementById('rail');
+const railclip  = document.getElementById('railclip');
+const nodesEl   = document.getElementById('nodes');
+const belt      = document.getElementById('belt');
+const apex      = document.getElementById('apex');
+const nudgeL    = document.getElementById('nudgeL');
+const nudgeR    = document.getElementById('nudgeR');
+const spectrum  = document.getElementById('spectrum');
+const calm      = matchMedia('(prefers-reduced-motion: reduce)');
 let openKey = null;
+let sortMode = 'time';
 let items = [];
 let t = 0;
 let shown = 0;
 let geo = null;
+let viewbox = null;
 let anim = 0;
 let wheelAcc = 0;
 let wheelLock = 0;
@@ -356,6 +459,13 @@ let wheelDecay = 0;
 const WHEEL_SCALE = 0.4;
 const WHEEL_STEP = 90;
 const WHEEL_COOL = 520;
+
+const LANES = [
+  { dx: -28, dy: 14 },
+  { dx:  32, dy: 22 },
+  { dx: -16, dy: 30 },
+  { dx:  20, dy: 16 }
+];
 
 stage.addEventListener('mouseenter', () => stage.classList.add('on'));
 stage.addEventListener('mouseleave', () => stage.classList.remove('on'));
@@ -370,79 +480,116 @@ function whenScore(date){
   return year + (ongoing ? 0.5 : 0);
 }
 
-function pathLen(verts){
-  let n = 0;
-  for (let i = 1; i < verts.length; i++) n += Math.hypot(verts[i].x - verts[i-1].x, verts[i].y - verts[i-1].y);
-  return n;
+function sortItems(list){
+  const arr = (list || []).slice();
+  if (sortMode === 'favor'){
+    return arr.sort((a, b) => (a.favor ?? 999) - (b.favor ?? 999) || whenScore(b.date) - whenScore(a.date));
+  }
+  return arr.sort((a, b) => whenScore(b.date) - whenScore(a.date));
 }
 
-function atLength(verts, dist){
-  if (!verts.length) return {x:0,y:0};
-  if (dist <= 0) return {...verts[0]};
+function yAtX(verts, x){
+  if (!verts.length) return 0;
+  if (x <= verts[0].x) return verts[0].y;
   for (let i = 1; i < verts.length; i++){
-    const dx = verts[i].x - verts[i-1].x, dy = verts[i].y - verts[i-1].y;
-    const len = Math.hypot(dx, dy);
-    if (dist <= len || i === verts.length - 1){
-      const u = len ? clamp(dist / len, 0, 1) : 0;
-      return {x: verts[i-1].x + dx * u, y: verts[i-1].y + dy * u};
+    const a = verts[i - 1], b = verts[i];
+    if (x <= b.x || i === verts.length - 1){
+      const dx = b.x - a.x;
+      const u = dx ? clamp((x - a.x) / dx, 0, 1) : 1;
+      return a.y + (b.y - a.y) * u;
     }
-    dist -= len;
   }
-  return {...verts[verts.length - 1]};
+  return verts[verts.length - 1].y;
 }
 
 function spanFor(w){
   return w < 520 ? 0.46 : 0.34;
 }
 
-function layout(mode, w, h){
-  const pad = 36;
-  const x1 = pad, x2 = w - pad;
-  const span = spanFor(w);
+function measure(){
+  const full = railbleed.getBoundingClientRect();
+  const clip = railclip.getBoundingClientRect();
+  return {
+    W: railbleed.clientWidth,
+    H: railbleed.clientHeight,
+    originX: clip.left - full.left,
+    originY: clip.top - full.top,
+    winW: railclip.clientWidth,
+    winH: railclip.clientHeight
+  };
+}
+
+function layout(mode, W, H, winW){
+  const pad = 10;
+  const x1 = pad, x2 = W - pad;
+  const span = spanFor(winW) * (winW / Math.max(W, 1));
   if (mode === 'inventing'){
     const y = 30;
-    const spacing = (x2 - x1) * span;
-    const card = Math.round(clamp(spacing * 0.86, 128, Math.min(236, h - 48)));
+    const spacing = winW * spanFor(winW);
+      const card = Math.round(clamp(spacing * 0.92, 148, Math.min(280, H - 40)));
     return {
       kind:'line', d:`M${x1},${y} H${x2}`, x1, x2, y, span, card, hang: 12,
       at(u){ return {x: x1 + (x2 - x1) * u, y}; }
     };
   }
   if (mode === 'surfacing'){
-    const card = Math.round(clamp(w * 0.24, 150, 210));
-    const cy = Math.max(h * 0.42, 96);
+    const card = Math.round(clamp(winW * 0.34, 200, 320));
+    const cy = Math.max(H * 0.78, 150);
     const rx = (x2 - x1) / 2;
-    const ry = Math.max(72, Math.min(rx * 0.72, cy - 22, h * 0.46));
-    const cx = w / 2;
+    const ry = Math.max(130, Math.min(rx * 0.72, cy - 18, H * 0.82));
+    const cx = W / 2;
     const d = `M${x1.toFixed(1)},${cy.toFixed(1)} A${rx.toFixed(1)},${ry.toFixed(1)} 0 0 1 ${x2.toFixed(1)},${cy.toFixed(1)}`;
     return {
-      kind:'arc', d, cx, cy, rx, ry, span, card, hang: 10,
+      kind:'arc', d, cx, cy, rx, ry, span, card, hang: 36,
       at(u){
         const a = Math.PI * (1 - u);
         return {x: cx + rx * Math.cos(a), y: cy - ry * Math.sin(a)};
       }
     };
   }
-  const card = Math.round(clamp(w * 0.24, 150, 220));
-  const yMid = Math.max(36, (h - 130) * 0.38);
-  const amp = Math.min((h - 140) * 0.28, 52);
+  const spacing = winW * spanFor(winW);
+  const card = Math.round(clamp(spacing * 0.92, 148, Math.min(280, H - 40)));
+  const yMid = 68;
+  const amp = Math.min((H - 150) * 0.28, 52);
+  /* Meander around implied blocks; keep the focus on a mid run, not in a trough. */
   const way = [
-    [0, .12], [0.16, .12], [0.16, -.95], [0.38, -.95],
-    [0.38, .95], [0.60, .95], [0.60, -.32], [0.80, -.32],
-    [0.80, .46], [1, .46]
+    [0.00,  0.18],
+    [0.08,  0.18],
+    [0.14, -0.88],
+    [0.27, -0.88],
+    [0.35,  0.08],
+    [0.50,  0.08],
+    [0.58,  0.08],
+    [0.66,  0.92],
+    [0.78,  0.92],
+    [0.86, -0.42],
+    [0.94, -0.42],
+    [1.00,  0.12]
   ];
   const verts = way.map(([p, v]) => ({x: x1 + (x2 - x1) * p, y: yMid + amp * v}));
   const d = verts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join('');
-  const total = pathLen(verts);
   return {
-    kind:'poly', d, verts, total, span, card, hang: 12,
-    at(u){ return atLength(verts, total * u); }
+    kind:'poly', d, verts, span, card, hang: 14,
+    at(u){
+      const x = x1 + (x2 - x1) * u;
+      return {x, y: yAtX(verts, x)};
+    },
+    swing(x){
+      const y0 = yAtX(verts, x - 26);
+      const y1 = yAtX(verts, x);
+      const y2 = yAtX(verts, x + 26);
+      const curv = y2 - 2 * y1 + y0;
+      return {
+        dx: clamp((y0 - y2) * 0.22, -12, 12),
+        dy: clamp(-curv * 0.42, -16, 16)
+      };
+    }
   };
 }
 
 function atOff(off){
   if (!geo) return {x:0,y:0};
-  const u = clamp(0.5 + off * geo.span, 0.02, 0.98);
+  const u = clamp(0.5 + off * geo.span, 0.015, 0.985);
   return geo.at(u);
 }
 
@@ -450,7 +597,27 @@ function cardOpacity(off){
   const a = Math.abs(off);
   if (a >= 1.22) return 0;
   if (a <= 0.06) return 1;
-  return clamp(1 - (a / 1.18) * 0.62, 0.35, 1);
+  return clamp(1 - (a / 1.18) * 0.74, 0.28, 1);
+}
+
+function focusScale(off){
+  const k = clamp(1 - Math.abs(off), 0, 1);
+  const e = k * k * (3 - 2 * k);
+  return { x: 0.68 + 0.64 * e, y: 0.78 + 0.34 * e };
+}
+
+function yearPresence(x, vb){
+  const lx = x - vb.originX;
+  const {winW, W} = vb;
+  if (lx >= 0 && lx <= winW){
+    const edge = 56;
+    if (lx < edge) return 0.42 + 0.58 * (lx / edge);
+    if (lx > winW - edge) return 0.42 + 0.58 * ((winW - lx) / edge);
+    return 1;
+  }
+  const dist = lx < 0 ? -lx : lx - winW;
+  const margin = Math.max((W - winW) / 2, 48);
+  return clamp(0.22 * (1 - dist / margin), 0.05, 0.22);
 }
 
 function yearLabel(i){
@@ -465,13 +632,28 @@ function yearLabel(i){
   return y && y === py ? '' : d;
 }
 
-function cardHTML(p){
+function hueClouds(p, i){
+  const layouts = [
+    {x:50, y:64, s:64, t:0},
+    {x:48, y:66, s:62, t:1},
+    {x:52, y:63, s:66, t:0},
+    {x:49, y:67, s:60, t:2},
+    {x:51, y:65, s:63, t:1},
+    {x:50, y:68, s:61, t:0},
+    {x:48, y:64, s:65, t:2}
+  ];
+  const h = layouts[i % layouts.length];
+  return `<span class="hues" aria-hidden="true"><span class="hue" style="--hx:${h.x}%;--hy:${h.y}%;--hs:${h.s}%;--ht:${h.t}"></span></span>`;
+}
+
+function cardHTML(p, i){
   const tags = [].concat(p.tag || []).filter(Boolean);
   const title = esc(p.title);
   const desc = p.desc
     ? `<p class="desc">${esc(p.desc)}</p>`
     : `<p class="desc forthcoming">description forthcoming.</p>`;
   return `
+    ${hueClouds(p, i)}
     ${p.href
       ? `<a class="title" href="${esc(p.href)}" target="_blank" rel="noopener noreferrer">${title}</a>`
       : `<span class="title">${title}</span>`}
@@ -486,7 +668,7 @@ function setNudge(el, off){
 }
 
 function paint(){
-  if (!geo || !items.length) return;
+  if (!geo || !viewbox || !items.length) return;
   const hang = geo.hang;
   items.forEach((_, i) => {
     const el = belt.children[i];
@@ -494,26 +676,51 @@ function paint(){
     const off = i - t;
     const op = cardOpacity(off);
     const pt = atOff(off);
-    el.style.transform = `translate(${pt.x}px, ${pt.y + hang}px) translate(-50%, 0)`;
+    let dx = 0, dy = hang, rot = 0;
+    if (openKey === 'steering'){
+      const focus = clamp(1 - Math.abs(off), 0, 1);
+      const lane = LANES[i % LANES.length];
+      const swing = geo.swing ? geo.swing(pt.x) : {dx:0, dy:0};
+      dx = lane.dx * (0.22 + (1 - focus) * 0.78) + swing.dx * focus;
+      dy = hang + lane.dy * (0.18 + (1 - focus) * 0.82) + swing.dy * focus;
+      rot = clamp(swing.dx * 0.42 + lane.dx * 0.04, -8, 8);
+    } else if (openKey === 'surfacing'){
+      const k = 1 - clamp(Math.abs(off), 0, 1.15);
+      dy = hang + (1 - k * k) * 26;
+    }
+    const s = focusScale(off);
+    el.style.transform = `translate(${pt.x - viewbox.originX + dx}px, ${pt.y - viewbox.originY + dy}px) translate(-50%, 0) scale(${s.x}, ${s.y}) rotate(${rot}deg)`;
+    const footTop = document.getElementById('foot').getBoundingClientRect().top;
+    const box = el.getBoundingClientRect();
+    if (box.bottom > footTop - 10){
+      dy -= box.bottom - (footTop - 10);
+      el.style.transform = `translate(${pt.x - viewbox.originX + dx}px, ${pt.y - viewbox.originY + dy}px) translate(-50%, 0) scale(${s.x}, ${s.y}) rotate(${rot}deg)`;
+    }
     el.style.opacity = String(op);
+    el.style.setProperty('--presence', op.toFixed(3));
     el.style.pointerEvents = op > 0.2 ? 'auto' : 'none';
     el.classList.toggle('is-on', Math.abs(off) < 0.45);
     el.classList.toggle('is-side', op > 0.05 && Math.abs(off) >= 0.45);
     el.setAttribute('aria-hidden', op < 0.08 ? 'true' : 'false');
   });
 
-  const focus = atOff(0);
-  apex.style.left = focus.x + 'px';
-  apex.style.top = focus.y + 'px';
-
   const labels = [];
   items.forEach((_, i) => {
     const off = i - t;
-    if (Math.abs(off) > 1.18) return;
-    const yr = yearLabel(i);
-    if (!yr) return;
     const pt = atOff(off);
-    labels.push(`<span class="yr" style="left:${pt.x}px;top:${pt.y}px;opacity:${cardOpacity(off).toFixed(2)}">${esc(yr)}</span>`);
+    const edge = yearPresence(pt.x, viewbox);
+    const now = Math.abs(off) < 0.45;
+    const a = now ? 1 : Math.max(0.2, edge * (Math.abs(off) < 1.25 ? 0.95 : 0.5));
+    const cls = now ? ' is-now' : '';
+    const pos = `left:${pt.x}px;top:${pt.y}px;opacity:${a.toFixed(2)}`;
+    if (openKey === 'steering')
+      labels.push(`<span class="mark${cls}" style="${pos}">&gt;</span>`);
+    else if (openKey === 'surfacing')
+      labels.push(`<span class="dot${cls}" style="${pos}"></span>`);
+    else
+      labels.push(`<span class="tick-node${cls}" style="${pos}"></span>`);
+    const yr = yearLabel(i);
+    if (yr) labels.push(`<span class="yr" style="left:${pt.x}px;top:${pt.y}px;opacity:${a.toFixed(2)}">${esc(yr)}</span>`);
   });
   nodesEl.innerHTML = labels.join('');
   setNudge(nudgeL, shown <= 0);
@@ -521,21 +728,21 @@ function paint(){
 }
 
 function draw(){
-  const w = railclip.clientWidth;
-  const h = railclip.clientHeight;
-  if (w < 8 || h < 8 || !openKey || !items.length) return;
-  geo = layout(openKey, w, h);
+  viewbox = measure();
+  const {W, H, winW} = viewbox;
+  if (W < 8 || H < 8 || !openKey || !items.length) return;
+  geo = layout(openKey, W, H, winW);
   gallery.style.setProperty('--card', geo.card + 'px');
   const parts = [`<path class="stroke" d="${geo.d}"/>`];
   if (geo.kind === 'line'){
-    const units = 40;
+    const units = Math.max(40, Math.round(W / 32));
     for (let i = 0; i <= units; i++){
       const x = geo.x1 + (geo.x2 - geo.x1) * i / units;
       const hh = i % 8 === 0 ? 9 : i % 4 === 0 ? 5 : 3;
       parts.push(`<line class="tick" x1="${x}" y1="${geo.y}" x2="${x}" y2="${geo.y + hh}"/>`);
     }
   }
-  rail.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  rail.setAttribute('viewBox', `0 0 ${W} ${H}`);
   rail.setAttribute('preserveAspectRatio', 'none');
   rail.innerHTML = parts.join('');
   paint();
@@ -570,21 +777,56 @@ function go(i, instant){
   animateT(next);
 }
 
-function render(key){
-  items = (PROJECTS[key] || []).slice().sort((a, b) => whenScore(b.date) - whenScore(a.date));
+function render(key, keepTitle){
+  items = sortItems(PROJECTS[key] || []);
   gallery.classList.remove('is-inventing', 'is-surfacing', 'is-steering');
   gallery.classList.add('is-' + key);
-  shown = 0;
-  t = 0;
+  let start = 0;
+  if (keepTitle){
+    const i = items.findIndex(p => p.title === keepTitle);
+    if (i >= 0) start = i;
+  }
+  shown = start;
+  t = start;
   cancelAnimationFrame(anim);
   belt.innerHTML = items.map((p, i) =>
-    `<article class="card" data-i="${i}">${cardHTML(p)}</article>`).join('');
+    `<article class="card" data-i="${i}">${cardHTML(p, i)}</article>`).join('');
   nodesEl.innerHTML = '';
   requestAnimationFrame(() => {
     draw();
     requestAnimationFrame(draw);
   });
 }
+
+function markSort(){
+  spectrum.querySelectorAll('button[data-sort]').forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.sort === sortMode)));
+  document.body.classList.toggle('is-story', sortMode === 'favor');
+}
+
+function restir(){
+  if (!openKey) return;
+  const keep = items[shown] && items[shown].title;
+  const run = () => render(openKey, keep);
+  if (calm.matches){ run(); return; }
+  belt.classList.add('is-restir');
+  nodesEl.classList.add('is-restir');
+  setTimeout(() => {
+    run();
+    requestAnimationFrame(() => {
+      belt.classList.remove('is-restir');
+      nodesEl.classList.remove('is-restir');
+    });
+  }, 200);
+}
+
+spectrum.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-sort]');
+  if (!btn || btn.dataset.sort === sortMode) return;
+  sortMode = btn.dataset.sort;
+  markSort();
+  restir();
+});
 
 belt.addEventListener('click', e => {
   const card = e.target.closest('.card');
